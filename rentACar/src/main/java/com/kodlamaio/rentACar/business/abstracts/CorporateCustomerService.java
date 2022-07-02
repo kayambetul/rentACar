@@ -24,6 +24,9 @@ public interface CorporateCustomerService {
 	DataResult<List<GetAllCorporateCustomerResponse>> getAll();
 	
 	public CorporateCustomer getCorporateCustomerById(int id);
+	
+	
+
 }
 
 

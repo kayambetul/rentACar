@@ -1,7 +1,6 @@
 package com.kodlamaio.rentACar;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
@@ -51,5 +50,7 @@ public class RentACarApplication {
 				"BUSINESS.EXCEPTION");
 		return errorDataResult;
 	}
+	
+	
 
 }

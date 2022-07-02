@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.kodlamaio.rentACar.business.abstracts.InvoiceService;
 import com.kodlamaio.rentACar.business.abstracts.OrderedAdditionalItemService;
 import com.kodlamaio.rentACar.business.abstracts.RentalService;
+import com.kodlamaio.rentACar.business.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentACar.business.request.invoices.CreateInvoiceRequest;
 import com.kodlamaio.rentACar.business.response.invoices.GetAllInvoicesResponse;
 import com.kodlamaio.rentACar.business.response.invoices.ReadInvoiceResponse;
@@ -19,6 +20,7 @@ import com.kodlamaio.rentACar.core.utilities.results.Result;
 import com.kodlamaio.rentACar.core.utilities.results.SuccessDataResult;
 import com.kodlamaio.rentACar.core.utilities.results.SuccessResult;
 import com.kodlamaio.rentACar.dataAccess.abstracts.InvoiceRepository;
+import com.kodlamaio.rentACar.entities.concretes.Brand;
 import com.kodlamaio.rentACar.entities.concretes.Invoice;
 import com.kodlamaio.rentACar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentACar.entities.concretes.Rental;
@@ -44,11 +46,12 @@ public class InvoiceManager implements InvoiceService {
 	@Override
 	public Result add(CreateInvoiceRequest createInvoiceRequest) {
 
-		Rental rental= this.rentalservice.getRentalById(createInvoiceRequest.getRentalId());
+//		Rental rental=convertRentalToEntity(createInvoiceRequest);
+		//Rental rental= this.rentalservice.getRentalById(createInvoiceRequest.getRentalId());
 		checkIfInvoiceExists(createInvoiceRequest.getRentalId());
 		checkIfInvoiceNumberExists(createInvoiceRequest.getInvoiceNumber());  
-		Invoice invoice = this.modelMapperService.forRequest().map(createInvoiceRequest, Invoice.class);
-		
+		//Invoice invoice = this.modelMapperService.forRequest().map(createInvoiceRequest, Invoice.class);
+		Invoice invoice=convertInvoiceToEntity( createInvoiceRequest);
 		invoice.setState(1);
 		invoice.setTotalPrice(calculateInvoiceTotalPrice(createInvoiceRequest.getRentalId())); ;       
 		this.invoiceRepository.save(invoice);
@@ -129,5 +132,18 @@ public class InvoiceManager implements InvoiceService {
 		// TODO Auto-generated method stub
 		return checkIfInvoiceExistsById(id);
 	}
+
+	private Invoice convertInvoiceToEntity(CreateInvoiceRequest createInvoiceRequest) {
+		
+		return Invoice.builder().invoiceNumber(createInvoiceRequest.getInvoiceNumber()).rental(convertRentalToEntity(createInvoiceRequest))
+				.build();
+	}
 	
+
+	private Rental convertRentalToEntity(CreateInvoiceRequest createInvoiceRequest) {
+		
+		return Rental.builder().id(createInvoiceRequest.getRentalId()).build();
+		
+		
+	}
 }

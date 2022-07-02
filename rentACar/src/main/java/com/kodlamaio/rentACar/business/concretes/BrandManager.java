@@ -42,7 +42,8 @@ public class BrandManager implements BrandService {
 	public Result add(CreateBrandRequest createBrandRequest) {
 		// mapping
 		checkIfBrandExitsByName(createBrandRequest.getName());
-		Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
+		Brand brand=convertBrandToEntity(createBrandRequest);  //builder 
+		//Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 		this.brandRepository.save(brand);
 		return new SuccessResult("BRAND.ADDED");
 
@@ -109,6 +110,18 @@ public class BrandManager implements BrandService {
 	public Brand getBrandById(int id) {
 		
 		return checkIfBrandExistById(id);
+	}
+	
+	private Brand convertBrandToEntity(CreateBrandRequest createBrandRequest) {
+		
+		return Brand.builder().name(createBrandRequest.getName()).build();
+	}
+
+	@Override
+	public DataResult<ReadBrandResponse> getBrand(int id) {
+		Brand brand = checkIfBrandExistById(id); 
+		ReadBrandResponse readBrandResponse = this.modelMapperService.forResponse().map(brand, ReadBrandResponse.class);
+		return new SuccessDataResult<ReadBrandResponse>(readBrandResponse);
 	}
 	
 	

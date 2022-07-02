@@ -56,8 +56,7 @@ public class RentalManager implements RentalService {
 	@Override
 	public Result addIndividual(CreateIndividualCustomerRentalRequest createIndividualCustomerRentalRequest) {
 		Car car = this.carService.getCarById(createIndividualCustomerRentalRequest.getCarId());
-		IndividualCustomer individualCustomer = checkIfIndividualCustomerExistsById(
-				createIndividualCustomerRentalRequest.getIndividualCustomerId());
+		IndividualCustomer individualCustomer = this.individualCustomerService.getIndividualCustomerById(createIndividualCustomerRentalRequest.getIndividualCustomerId());		
 
 		checkCarAvailable(car.getId());
 
@@ -76,7 +75,7 @@ public class RentalManager implements RentalService {
 	@Override
 	public Result addCorporete(CreateCorporateCustomerRentalRequest createCorporateCustomerRentalRequest) {
 		Car car = this.carService.getCarById(createCorporateCustomerRentalRequest.getCarId());
-		checkIfCorporateCustomerExistsById(createCorporateCustomerRentalRequest.getCorporateCustomerId());
+		CorporateCustomer corporateCustomer=this.corporateCustomerService.getCorporateCustomerById(createCorporateCustomerRentalRequest.getCorporateCustomerId());
 		checkCarAvailable(car.getId());
 
 		Rental rental = this.modelMapperService.forRequest().map(createCorporateCustomerRentalRequest, Rental.class);
@@ -91,8 +90,7 @@ public class RentalManager implements RentalService {
 	public Result updateIndividual(UpdateIndividualCustomerRentalRequest updateIndividualCustomerRentalRequest) {
 		checkIfRentalExistsById(updateIndividualCustomerRentalRequest.getId());
 		Car car = this.carService.getCarById(updateIndividualCustomerRentalRequest.getCarId());
-		IndividualCustomer individualCustomer = checkIfIndividualCustomerExistsById(
-				updateIndividualCustomerRentalRequest.getIndividualCustomerId());
+		IndividualCustomer individualCustomer = this.individualCustomerService.getIndividualCustomerById(updateIndividualCustomerRentalRequest.getIndividualCustomerId());
 
 		Rental rental = this.modelMapperService.forRequest().map(updateIndividualCustomerRentalRequest, Rental.class);
 		rental.setReturnDate(calculateReturnDate(updateIndividualCustomerRentalRequest.getPickupDate(),
@@ -111,7 +109,7 @@ public class RentalManager implements RentalService {
 	public Result updateCorporate(UpdateCorporateCustomerRentalRequest updateCorporateCustomerRentalRequest) {
 		checkIfRentalExistsById(updateCorporateCustomerRentalRequest.getCorporateCustomerId());
 		Car car = this.carService.getCarById(updateCorporateCustomerRentalRequest.getCarId());
-		checkIfCorporateCustomerExistsById(updateCorporateCustomerRentalRequest.getCorporateCustomerId());
+		CorporateCustomer corporateCustomer=this.corporateCustomerService.getCorporateCustomerById(updateCorporateCustomerRentalRequest.getCorporateCustomerId());
 		Rental rental = this.modelMapperService.forRequest().map(updateCorporateCustomerRentalRequest, Rental.class);
 		rental.setReturnDate(calculateReturnDate(updateCorporateCustomerRentalRequest.getPickupDate(),
 				updateCorporateCustomerRentalRequest.getTotalDays()));
@@ -205,16 +203,7 @@ public class RentalManager implements RentalService {
 
 	}
 
-	private IndividualCustomer checkIfIndividualCustomerExistsById(int id) { //individualCustomer için id
-		IndividualCustomer currentIndividualCustomer;
-		try {
-			currentIndividualCustomer = this.individualCustomerService.getIndividualCustomerById(id);
-		} catch (Exception e) {
-			throw new BusinessException("USER.NOT.EXISTS");
-		}
-		return currentIndividualCustomer;
-
-	}
+	
 
 	private void checkIfTaxNumberExist(int corporateCustomerId) {  
 		CorporateCustomer corporateCustomer;
@@ -225,15 +214,7 @@ public class RentalManager implements RentalService {
 		}
 	}
 
-	private CorporateCustomer checkIfCorporateCustomerExistsById(int id) {      //corporateCustomer için id 
-		CorporateCustomer currentCorporateCustomer;
-		try {
-			currentCorporateCustomer = this.corporateCustomerService.getCorporateCustomerById(id);
-		} catch (Exception e) {
-			throw new BusinessException("CORPORATE_CUSTOMER.NOT.EXISTS");
-		}
-		return currentCorporateCustomer;
-	}
+	
 
 	@Override
 	public Rental getRentalById(int id) {
