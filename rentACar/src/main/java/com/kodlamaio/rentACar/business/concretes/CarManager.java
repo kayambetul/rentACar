@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.kodlamaio.rentACar.business.abstracts.CarService;
@@ -65,12 +66,20 @@ public class CarManager implements CarService {
 
 	}
 
+	//caching yaptık bu sayede ilk işlemden sonra her seferinde ön bellekten çekicek ve daha hızlı çalışacak.(4 sn)
+	@Cacheable("cars")
 	@Override
 	public DataResult<List<GetAllCarsResponse>> getAll() {
 		List<Car> cars = this.carRepository.findAll();
 		List<GetAllCarsResponse> response = cars.stream()
 				.map(car -> this.modelMapperService.forResponse().map(car, GetAllCarsResponse.class))
 				.collect(Collectors.toList());
+		
+		try {
+			Thread.sleep(1000*4);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		return new SuccessDataResult<List<GetAllCarsResponse>>(response);
 	}
